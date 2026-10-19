@@ -15,6 +15,7 @@
 | [`pwsh/New-GitHubRepo.ps1`](pwsh/New-GitHubRepo.ps1) | 目录里补 README/.gitignore/LICENSE，初始化并建仓推送 |
 | [`python/office_convert.py`](python/office_convert.py) | 调 LibreOffice 无头模式批量转换 docx/xlsx/pptx → pdf 等 |
 | [`python/env_report.py`](python/env_report.py) | 打印本机工具链版本表，缺什么一眼看到 |
+| [`python/ocr.py`](python/ocr.py) | 图片 / PDF 中文 OCR（RapidOCR，PP-OCRv6） |
 
 ## 用法
 
@@ -60,6 +61,18 @@ python .\python\office_convert.py report.docx deck.pptx --to pdf
 
 找不到 soffice 时设置 `SOFFICE_BIN` 环境变量指向可执行文件。
 
+### OCR
+
+```powershell
+python .\python\ocr.py scan.png
+python .\python\ocr.py .\contracts --out out.txt     # 目录递归
+python .\python\ocr.py report.pdf --json             # 带置信度，便于过滤
+```
+
+PDF 用 pypdfium2 渲染成位图再识别，不依赖 poppler。糊图可以用 `--min-score 0.85`
+把明显不可信的行丢掉——实测 640px + JPEG q28 + 噪点的页面，PP-OCRv4 会把
+「浏览器」认成「浏宽器」，PP-OCRv6 全对。
+
 ### 环境体检
 
 ```powershell
@@ -72,6 +85,7 @@ python .\python\env_report.py --json
 - Windows 11 / PowerShell 5.1 与 7 都能跑（脚本按 5.1 语法写）
 - Python 3.10+，只用了标准库
 - LibreOffice（仅 `office_convert.py` 需要）、GitHub CLI（仅建仓/传 key 需要）
+- `ocr.py` 额外要 `pip install rapidocr pypdfium2 pillow numpy`，其余脚本不需要
 
 ## License
 

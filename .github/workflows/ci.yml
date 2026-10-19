@@ -29,6 +29,9 @@ jobs:
       - name: office_convert 帮助页
         run: python python/office_convert.py --help
 
+      - name: ocr 帮助页
+        run: python python/ocr.py --help
+
   powershell:
     name: PowerShell 脚本
     runs-on: ubuntu-latest
