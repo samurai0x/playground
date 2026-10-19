@@ -1,5 +1,7 @@
 # playground
 
+[![CI](https://github.com/samurai0x/playground/actions/workflows/ci.yml/badge.svg)](https://github.com/samurai0x/playground/actions/workflows/ci.yml)
+
 一些日常在 Windows 上折腾时攒下来的小工具：环境、GitHub、Office 转换。
 
 都是自用的，但尽量写成拿来就能跑的样子。

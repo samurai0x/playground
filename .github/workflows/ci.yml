@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  python:
+    name: Python 脚本
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 语法检查
+        run: python -m compileall -q python
+
+      - name: env_report 冒烟
+        run: python python/env_report.py --json | python -c "import json,sys; d=json.load(sys.stdin); print('tools:', len([k for k in d if not k.startswith('_')]))"
+
+      - name: office_convert 帮助页
+        run: python python/office_convert.py --help
+
+  powershell:
+    name: PowerShell 脚本
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 解析语法（不执行）
+        shell: pwsh
+        run: |
+          $failed = 0
+          Get-ChildItem pwsh -Filter *.ps1 | ForEach-Object {
+            $tokens = $null
+            $errors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile(
+              $_.FullName, [ref]$tokens, [ref]$errors) | Out-Null
+            if ($errors) {
+              $errors | ForEach-Object {
+                Write-Host "::error file=pwsh/$($_.Extent.File | Split-Path -Leaf),line=$($_.Extent.StartLineNumber)::$($_.Message)"
+              }
+              $failed++
+            }
+            else {
+              Write-Host "OK  $($_.Name)"
+            }
+          }
+          if ($failed -gt 0) { throw "$failed 个脚本有语法错误" }
