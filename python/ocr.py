@@ -95,6 +95,7 @@ def run(engine, image) -> list[dict]:
 
 
 def main() -> int:
+    _configure_stdout()  # 先于 argparse，否则 --help 的中文在 GBK 控制台会乱码
     parser = argparse.ArgumentParser(description="RapidOCR 识别图片 / PDF 文字")
     parser.add_argument("targets", nargs="+", help="图片、PDF 或目录")
     parser.add_argument("--json", action="store_true", help="输出 JSON（含每行置信度）")
@@ -102,7 +103,6 @@ def main() -> int:
     parser.add_argument("--out", help="把纯文本结果写到这个文件")
     args = parser.parse_args()
 
-    _configure_stdout()
     files = collect_files(args.targets)
     if not files:
         print("没有可识别的文件", file=sys.stderr)
