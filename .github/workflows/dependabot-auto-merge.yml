@@ -1,7 +1,7 @@
 name: Dependabot auto-merge
 
 # pull_request_target：Dependabot 触发的 pull_request 工作流只拿到只读 token，
-# 拿不到写权限就没法合并，所以这里用 target 版本（在主干上下文里跑，不 checkout PR 代码）。
+# 这里用 target 版本（在主干上下文里跑，不 checkout PR 代码），确保 GITHUB_TOKEN 有写权限。
 on:
   pull_request_target:
     types: [opened, synchronize, reopened]
@@ -15,7 +15,6 @@ jobs:
     # 只处理 Dependabot 自己开的 PR，人手开的 PR 一律不碰
     if: github.actor == 'dependabot[bot]'
     runs-on: ubuntu-latest
-    timeout-minutes: 30
     steps:
       - name: 读取更新类型
         id: meta
@@ -23,14 +22,13 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      # 小版本/补丁自动合并；大版本（可能 breaking）留 PR 给人看
-      - name: 小版本自动合并
+      # 小版本/补丁挂 auto-merge：等 main 上配置的必需检查（CI 两个 job）全绿后自动 squash 合并。
+      # 不要用 `gh pr checks --watch` —— 本 job 自己也是 PR 的一个 check，会等自己而卡死。
+      - name: 小版本挂自动合并
         if: >-
           steps.meta.outputs.update-type == 'version-update:semver-patch' ||
           steps.meta.outputs.update-type == 'version-update:semver-minor'
-        run: |
-          gh pr checks "$PR_URL" --watch --interval 20
-          gh pr merge "$PR_URL" --squash --delete-branch
+        run: gh pr merge "$PR_URL" --auto --squash --delete-branch
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
