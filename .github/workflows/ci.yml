@@ -14,7 +14,7 @@ jobs:
     name: Python 脚本
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.0
 
       - uses: actions/setup-python@v7
         with:
@@ -36,7 +36,7 @@ jobs:
     name: PowerShell 脚本
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.0
 
       - name: 解析语法（不执行）
         shell: pwsh

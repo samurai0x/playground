@@ -20,3 +20,5 @@ updates:
       github-actions:
         patterns:
           - "*"
+
+# 2026-10-20 手动触发一次检查，验证自动合并链路
