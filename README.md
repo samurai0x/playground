@@ -92,6 +92,7 @@ python .\python\env_report.py --json
 - `.github/dependabot.yml`：每周一 09:00（Asia/Shanghai）检查 GitHub Actions 的新版本，把多个 action 的更新合成一个 PR（`groups`），最多同时开 5 个。
 - `.github/workflows/dependabot-auto-merge.yml`：Dependabot 的**小版本/补丁** PR 在 CI 全绿后自动 squash 合并；**大版本**（如 `@v4 → @v7`，可能 breaking）只开 PR 不自动合，等人看一眼。
 - Dependabot 安全更新（alert 驱动的 PR）在仓库 Settings → Advanced Security 里已打开。
+- `main` 分支保护把 CI 的 `Python 脚本` / `PowerShell 脚本` 设为必需检查，自动合并要等这两个都绿；仓库管理员仍可直接 push（GitHub 会提示 `Bypassed rule violations`，属预期）。
 
 ## License
 
